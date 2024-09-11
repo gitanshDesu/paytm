@@ -1,12 +1,20 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+interface UserDBProps extends Document {
+    username: string;
+    firstName: string;
+    lastName: string;
+    password: string;
+    createHash(password: string): Promise<string>; // Method definition
+    validatePassword(userPassword: string): Promise<boolean>; //Method definition
+};
+
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
         trim:true, // removes the space if it is at beginning or end
         lowercase:true, // always convert to Lowercase 
-        minLength:3,
         maxLength:30,
     },
     password: {
@@ -28,7 +36,7 @@ const userSchema = new mongoose.Schema({
         maxLength:50
     }
 });
-//Defining methods to create hash and validate user password with stored hash and hash function.
+
 // Method to generate a hash from plain text.
 userSchema.methods.createHash = async function (plainTextPassword:string) {
      // Hashing user's salt and password with 10 iterations,
@@ -36,12 +44,10 @@ userSchema.methods.createHash = async function (plainTextPassword:string) {
      // First method to generate a salt and then create hash
     const salt = await bcrypt.genSalt(saltRounds);
     return await bcrypt.hash(plainTextPassword,salt);
-    // Second mehtod - Or we can create salt and hash in a single method also
-  // return await bcrypt.hash(plainTextPassword, saltRounds);
-}
+};
 //Validating the user password with the stored hash and hash function
 userSchema.methods.validatePassword = async function (userPassword:string){
     return await bcrypt.compare(userPassword,this.password);
-}
-const User = mongoose.model("User",userSchema);
+};
+const User = mongoose.model<UserDBProps>("User",userSchema);
 export default User;
