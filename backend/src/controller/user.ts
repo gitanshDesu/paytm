@@ -1,5 +1,6 @@
 import express, { Request,Response } from 'express';
 import User from '../models/user';
+import Account from '../models/account';
 import jwt from 'jsonwebtoken';
 import { signInBodyProps, signUpBodyProps,updateBodyProps } from '../zod/user';
 interface CustomRequest extends Request {
@@ -32,6 +33,11 @@ export const signUpHandler = async (req:Request,res:Response)=>{
            newUser.password = passwordHash;
            await newUser.save();
            const userId = newUser._id;
+           // ----- Create new account ------
+           await Account.create({
+                  userId,
+                   balance: 1 + Math.random() * 10000
+                })
            //JWT: create token
            const token = jwt.sign({userId},process.env.JWT_SECRET!)
             res.status(200).json({
