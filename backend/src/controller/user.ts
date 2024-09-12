@@ -1,7 +1,10 @@
 import express, { Request,Response } from 'express';
 import User from '../models/user';
 import jwt from 'jsonwebtoken';
-import { signInBodyProps, signUpBodyProps } from '../zod/user';
+import { signInBodyProps, signUpBodyProps,updateBodyProps } from '../zod/user';
+interface CustomRequest extends Request {
+    userId?: string; // Mark it as optional in case it's not always present
+  }
 
 export const signUpHandler = async (req:Request,res:Response)=>{
     try {
@@ -81,4 +84,60 @@ export const signInHandler = async (req:Request,res:Response)=>{
             error
         });
     }
-}
+};
+
+export const updateHandler = async (req:CustomRequest, res:Response)=>{
+    try {
+        const {password,firstName,lastName} = req.body
+        const {success} = updateBodyProps.safeParse({password,firstName,lastName});
+        if(!success){
+            res.status(411).json({
+                message: "Error while updating information"
+            })
+        }
+        // {new:true} : returns user after it is updated otherwise we get user before it is updated.
+        const updateUser = await User.findOneAndUpdate({_id: req.userId},{firstName,lastName},{new: true});
+        const newPassword = await updateUser!.createHash(password);
+            updateUser!.password = newPassword;
+            updateUser!.save();
+       res.json({
+        message: "Updated successfully"
+       })
+        
+    } catch (error) {
+        res.status(500).json({
+            message: `Can't Update information right now ${error}`
+        })
+    }
+};
+
+export const getUsersHandler = async (req:Request,res:Response)=>{
+    try {
+        const filter = req.query.filter || "";
+        const users = await User.find({
+            $or: [{
+                firstName: {
+                    "$regex":filter
+                },
+            },{
+                lastName: {
+                    "$regex":filter
+                }
+            }]
+        });
+        if(users){
+            res.json({
+                user: users.map(user =>({
+                    username: user.username,
+                    firtName: user.firstName,
+                    lastName: user.lastName,
+                    _id: user._id
+                }))
+            });
+        };
+    } catch (error) {
+        res.status(500).json({
+            message: `Can't Get Users right now ${error}`
+        })
+    }
+};
