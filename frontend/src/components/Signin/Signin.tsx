@@ -20,7 +20,7 @@ function Signin() {
       <div className="pt-4">
       <Button label= {"Sign in"} onClick={onClickHandler}/>
       </div>
-      <BottomWarning label = {"Don't have an account?"} buttonText= {"Sign up"} to = {"/signin"}/>
+      <BottomWarning label = {"Don't have an account?"} buttonText= {"Sign up"} to = {"/signup"}/>
       </div>
     </div>
   )
