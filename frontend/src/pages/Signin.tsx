@@ -1,8 +1,9 @@
-import BottomWarning from './BottomWarning'
-import Button from './Button'
-import Heading from './Heading'
-import Input from './Input'
-import SubHeading from './SubHeading'
+
+import BottomWarning from '../components/BottomWarning'
+import Button from '../components/Button'
+import Heading from '../components/Heading'
+import Input from '../components/Input'
+import SubHeading from '../components/SubHeading'
 
 function Signin() {
   function onClickHandler(){
