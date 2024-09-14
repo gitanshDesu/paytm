@@ -6,12 +6,14 @@ import Heading from '../components/Heading'
 import Input from '../components/Input'
 import SubHeading from '../components/SubHeading'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 function Signup() {
   const [firstName,setFirstName] = useState("");
   const [lastName,setLastName] = useState("");
   const [username,setUsername] = useState("");
   const [password,setPassword] = useState("");
+  const navigate = useNavigate();
   async function onClickHandler(){
    const response = await axios.post("http://localhost:3000/api/v1/user/signup",{
       username,
@@ -20,6 +22,8 @@ function Signup() {
       password
     });
     localStorage.setItem("token",response.data.token);
+    //automatically takes user to dashboard after successful signup
+    navigate("/dashboard")
   }
   return (
     <div className="bg-slate-300 h-screen flex justify-center">
