@@ -1,9 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import rootRouter from '../src/routes/index';
+import rootRouter from './routes/index';
 import cors from 'cors';
-import bodyParser = require('body-parser');
+import bodyParser from 'body-parser'
 dotenv.config();
 const app = express();
 // parse application/json
