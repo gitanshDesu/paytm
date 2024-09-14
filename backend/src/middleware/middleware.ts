@@ -5,7 +5,8 @@ interface CustomRequest extends Request {
     userId?: string; // Mark it as optional in case it's not always present
   }
 export const authMiddleware = async (req:CustomRequest,res:Response,next:NextFunction)=>{
-    const {authHeader} = req.headers;
+   try{
+    const authHeader = req.headers.authorization;
     //Type Assertion used
     if (!authHeader || !(authHeader as string).startsWith('Bearer ')) {
         return res.status(403).json({});
@@ -13,11 +14,11 @@ export const authMiddleware = async (req:CustomRequest,res:Response,next:NextFun
     //Type Assertion used
     const token = (authHeader as string).split(" ")[1];
     //Type Assertion used
-    try {
+    
         const decoded = jwt.verify(token,process.env.JWT_SECRET!) as JwtPayload;
         req.userId = decoded.userId;
         next();
-    } catch (error) {
-        return res.status(403).json({});
+   }catch (error) {
+        return res.status(500).json({});
     }
 }

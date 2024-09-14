@@ -21,7 +21,9 @@ export const getBalanceHandler = async (req:CustomRequest,res:Response)=>{
 }
 
 export const transferHandler = async (req:CustomRequest,res:Response)=>{
+    const session = await mongoose.startSession();
     try {
+        session.startTransaction(); // Explicitly start the transaction
         const {amount,to} = req.body;
         const {success} = transferBodyProps.safeParse({amount,to});
         if(!success){
@@ -29,7 +31,6 @@ export const transferHandler = async (req:CustomRequest,res:Response)=>{
                 message: "Wrong Inputs Sent"
             });
         } else {
-            const session = await mongoose.startSession();
             //Fetch the accounts within the transaction
             const account = await Account.findOne({userId: req.userId}).session(session);
             if (!account || account.balance < amount) {
@@ -56,8 +57,11 @@ export const transferHandler = async (req:CustomRequest,res:Response)=>{
         }
 
     } catch (error) {
+        await session.abortTransaction(); // Ensure the transaction is aborted in case of any error
         res.status(500).json({
             message: `Error While transferring Balance ${error}`
         })
-    }
+    } finally {
+        session.endSession(); // Always end the session
+      }
 }
