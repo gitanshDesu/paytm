@@ -135,7 +135,7 @@ export const getUsersHandler = async (req:Request,res:Response)=>{
             res.json({
                 user: users.map(user =>({
                     username: user.username,
-                    firtName: user.firstName,
+                    firstName: user.firstName,
                     lastName: user.lastName,
                     _id: user._id
                 }))
