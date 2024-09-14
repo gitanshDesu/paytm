@@ -123,11 +123,13 @@ export const getUsersHandler = async (req:Request,res:Response)=>{
         const users = await User.find({
             $or: [{
                 firstName: {
-                    "$regex":filter
+                    "$regex":filter,
+                    "$options": "i" // for case insensitve search
                 },
             },{
                 lastName: {
-                    "$regex":filter
+                    "$regex":filter,
+                    "$options": "i"
                 }
             }]
         });
