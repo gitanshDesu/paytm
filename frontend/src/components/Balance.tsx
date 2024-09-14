@@ -4,7 +4,7 @@ interface BalanceProps {
 
 function Balance({value}:BalanceProps) {
   return (
-    <div className="flex pt-4">
+    <div className="flex">
         <div className="font-bold text-lg">
             Your Balance
         </div>
