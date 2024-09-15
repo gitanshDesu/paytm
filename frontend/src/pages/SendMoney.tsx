@@ -8,6 +8,7 @@ export const SendMoney = () => {
     const name = serachParams.get("name");
     const [amount,setAmount] = useState(0);
     const navigate = useNavigate();
+    const [message,setMessage] = useState('');
   return <div className="flex justify-center h-screen bg-gray-100">
       <div className="h-full flex flex-col justify-center">
           <div
@@ -49,11 +50,16 @@ export const SendMoney = () => {
                             Authorization: "Bearer "+ localStorage.getItem("token")
                         }
                     })
-                    navigate("/dashboard?id="+response.data.id)
+                     setMessage(response.data.message);
+                    setTimeout(()=>{
+                        navigate("/dashboard?id="+response.data.id)
+                    },1000)
                   }}
                   className="justify-center rounded-md text-sm font-medium ring-offset-background transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white">
                       Initiate Transfer
                   </button>
+                  {message === "Transfer Successful" ? <div className="text-green-500 text-center">Payment Success!</div>:null}
+                  
               </div>
               </div>
       </div>
