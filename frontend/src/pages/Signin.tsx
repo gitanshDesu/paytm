@@ -1,13 +1,25 @@
 
+import { useState } from 'react'
 import BottomWarning from '../components/BottomWarning'
 import Button from '../components/Button'
 import Heading from '../components/Heading'
 import Input from '../components/Input'
 import SubHeading from '../components/SubHeading'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 function Signin() {
-  function onClickHandler(){
-
+  const navigate = useNavigate();
+  const [username,setUsername] = useState("");
+  const [password,setPassword] = useState("");
+ async function onClickHandler(){
+      const response = await axios.post("http://localhost:3000/api/v1/user/signin",{
+        username,
+        password
+      });
+      localStorage.setItem("token",response.data.token);
+      //send me request when clicked on sigin button to get username details
+      navigate("/dashboard?id="+response.data.id);
   }
   return (
     <div className="bg-slate-300 h-screen flex justify-center">
@@ -15,11 +27,11 @@ function Signin() {
       <div className="rounded-lg bg-white w-80 text-center p-2 h-max px-4">
       <Heading label = {"Sign In"}/>
       <SubHeading label = {"Enter your credentials to access your account"}/>
-      <Input label = {"Email"} placeholder= {"gitansh@gmail.com"}/>
-      <Input label = {"Password"} placeholder= {"123456"}/>
+      <Input onChange={(e)=>setUsername(e.target.value)} label = {"Email"} placeholder= {"gitansh@gmail.com"}/>
+      <Input onChange = {e=>setPassword(e.target.value)} label = {"Password"} placeholder= {"123456"}/>
       </div>
       <div className="pt-4">
-      <Button label= {"Sign in"} onClick={onClickHandler}/>
+      <Button label= {"Sign in"} onClick={onClickHandler} />
       </div>
       <BottomWarning label = {"Don't have an account?"} buttonText= {"Sign up"} to = {"/signup"}/>
       </div>

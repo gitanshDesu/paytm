@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import Button from './Button';
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 interface UsersProps{
    firstName:string;
    lastName:string;
-   _id:number
+   _id:string;
 }
 interface UserProps{
     user: UsersProps
@@ -14,14 +14,28 @@ function Users() {
     // Replace with backend call
     const [users,setUsers] = useState<UsersProps[]>([]);
     const [filter,setFilter] = useState("");
+    const [searchParams] = useSearchParams();
+    const id = searchParams.get("id");
     //Add debouncing here
     useEffect(()=>{
-        axios.get("http://localhost:3000/api/v1/user/bulk?filter="+ filter)
+        axios.get("http://localhost:3000/api/v1/user/bulk?filter="+ filter,{
+            headers:{
+                Authorization: "Bearer "+localStorage.getItem("token"),
+            }
+        })
             .then(response =>{
-                console.log(response.data)
                 setUsers(response.data.user)
             })
-    },[filter])
+            
+    },[filter]);
+    const newUsers = users.filter((user)=>{
+        if(user._id === id){
+            return false;
+        }else{
+            return true;
+        }
+    })
+    
   return (
     <div>
         <div className="font-bold mt-6 text-lg">
@@ -35,7 +49,7 @@ function Users() {
             className="w-full px-2 py-1 border rounded border-slate-200" />
         </div>
         <div>
-            {users.map((user,index)=>  <User key = {index} user = {user}/>)}
+            {newUsers.map((user,index)=>  <User key = {index} user = {user}/>)}
         </div>
     </div>
   )
@@ -48,7 +62,7 @@ function User({user}:UserProps){
             <div  className="flex">
             <div className="rounded-full h-12 w-12 bg-slate-200 flex justify-center mt-1 mr-2">
             <div className="flex flex-col justify-center h-full text-xl">
-                {user.firstName![0] || ""}
+                {user.firstName![0].toUpperCase() || ""}
             </div>
             </div>
             <div className="flex flex-col justify-center h-ful">
