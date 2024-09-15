@@ -16,6 +16,10 @@ function Signin() {
       const response = await axios.post("http://localhost:3000/api/v1/user/signin",{
         username,
         password
+      },{
+        headers: {
+          'Content-Type':'application/json'
+        }
       });
       localStorage.setItem("token",response.data.token);
       //send me request when clicked on sigin button to get username details
